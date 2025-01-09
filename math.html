@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수학 게임</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            color: #333;
+        }
+        .hidden {
+            display: none;
+        }
+        .game-container {
+            margin-top: 20px;
+        }
+        .question {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .input-container {
+            margin: 10px 0;
+        }
+        input[type="number"] {
+            font-size: 20px;
+            padding: 5px;
+            width: 100px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .timer, .score {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .end-message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div id="startScreen">
+        <h1>수학 게임</h1>
+        <button onclick="showDifficultyScreen()">게임 시작하기</button>
+    </div>
+    <div id="difficultyScreen" class="hidden">
+        <h2>난이도를 선택하세요</h2>
+        <button onclick="setDifficulty('easy')">쉬움</button>
+        <button onclick="setDifficulty('medium')">보통</button>
+        <button onclick="setDifficulty('hard')">어려움</button>
+    </div>
+    <div id="gameScreen" class="hidden">
+        <div class="game-container">
+            <div class="timer">남은 시간: <span id="time">30</span>초</div>
+            <div class="score">점수: <span id="score">0</span></div>
+            <div class="question" id="question">문제가 여기에 표시됩니다.</div>
+            <div class="input-container">
+                <input type="number" id="answer" placeholder="정답 입력" oninput="toggleSubmitButton()" autocomplete="off">
+                <button id="submitBtn" onclick="submitAnswer()" disabled>제출</button>
+            </div>
+            <div class="end-message" id="endMessage"></div>
+            <button id="retryBtn" class="hidden" onclick="retryGame()">다시하기</button>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = 30;
+        let score = 0;
+        let currentAnswer;
+        let difficulty = 'easy';
+
+        const startScreen = document.getElementById('startScreen');
+        const difficultyScreen = document.getElementById('difficultyScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const timeDisplay = document.getElementById('time');
+        const scoreDisplay = document.getElementById('score');
+        const questionDisplay = document.getElementById('question');
+        const endMessage = document.getElementById('endMessage');
+        const answerInput = document.getElementById('answer');
+        const submitBtn = document.getElementById('submitBtn');
+        const retryBtn = document.getElementById('retryBtn');
+
+        function toggleSubmitButton() {
+            submitBtn.disabled = !answerInput.value.trim();
+        }
+
+        function getRandomNumber(range) {
+            return Math.floor(Math.random() * range);
+        }
+
+        function generateQuestion() {
+            let num1, num2;
+            const operations = ['+', '-'];
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+
+            if (difficulty === 'easy') {
+                num1 = getRandomNumber(10);
+                num2 = getRandomNumber(10);
+            } else if (difficulty === 'medium') {
+                num1 = getRandomNumber(90) + 10; // 10~99
+                num2 = getRandomNumber(90) + 10;
+            } else if (difficulty === 'hard') {
+                num1 = getRandomNumber(900) + 100; // 100~999
+                num2 = getRandomNumber(900) + 100;
+            }
+
+            if (operation === '-' && num1 < num2) {
+                [num1, num2] = [num2, num1]; // Swap to avoid negative result
+            }
+
+            questionDisplay.textContent = `${num1} ${operation} ${num2} = ?`;
+            currentAnswer = operation === '+' ? num1 + num2 : num1 - num2;
+        }
+
+        function submitAnswer() {
+            const userAnswer = Number(answerInput.value);
+            if (userAnswer === currentAnswer) {
+                score++;
+                scoreDisplay.textContent = score;
+            }
+            answerInput.value = '';
+            toggleSubmitButton();
+            generateQuestion();
+        }
+
+        function handleEnterKey(event) {
+            if (event.key === 'Enter' && !submitBtn.disabled) {
+                submitAnswer();
+            }
+        }
+
+        function showDifficultyScreen() {
+            startScreen.classList.add('hidden');
+            difficultyScreen.classList.remove('hidden');
+        }
+
+        function setDifficulty(selectedDifficulty) {
+            difficulty = selectedDifficulty;
+            difficultyScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            startGame();
+        }
+
+        function startGame() {
+            resetGame();
+            generateQuestion();
+            answerInput.focus();
+            const timer = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function resetGame() {
+            timeLeft = 30;
+            score = 0;
+            scoreDisplay.textContent = score;
+            timeDisplay.textContent = timeLeft;
+            endMessage.textContent = '';
+            retryBtn.classList.add('hidden');
+            document.querySelector('.input-container').style.display = 'block';
+        }
+
+        function endGame() {
+            questionDisplay.textContent = '';
+            document.querySelector('.input-container').style.display = 'none';
+            endMessage.textContent = `게임 종료! 총 점수: ${score}점`;
+            retryBtn.classList.remove('hidden');
+        }
+
+        function retryGame() {
+            difficultyScreen.classList.remove('hidden');
+            gameScreen.classList.add('hidden');
+        }
+
+        // 이벤트 리스너 추가
+        answerInput.addEventListener('keydown', handleEnterKey);
+    </script>
+</body>
+</html>

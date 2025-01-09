@@ -1,1 +1,77 @@
+<!DOCTYPE html>
 
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹 링크 모음</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+        }
+        .link-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 8px;
+            transition: transform 0.2s;
+        }
+        li:hover {
+            transform: translateX(10px);
+        }
+        a {
+            color: #34495e;
+            font-size: 1.1em;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <h1>웹 링크 모음</h1>
+    
+    <div class="link-container">
+        <h2>내가 제작한 웹사이트</h2>
+        <ul>
+            <li><a href="timer.html">타이머</a></li>
+            <li><a href="math.html">수학 연산 게임</a></li>
+            <li><a href="mywordle.html">Wordle 게임</a></li>
+        </ul>
+    </div>
+
+    <div class="link-container">
+        <h2>학습 사이트</h2>
+        <ul>
+            <li><a href="https://www.w3schools.com">W3Schools</a></li>
+            <li><a href="https://developer.mozilla.org">MDN Web Docs</a></li>
+        </ul>
+    </div>
+</body>
+</html>
